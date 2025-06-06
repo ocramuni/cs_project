@@ -1,0 +1,5 @@
+DROP TABLE participations;
+DROP TABLE events;
+DROP TABLE event_categories;
+DROP TABLE users;
+DROP TABLE roles;
