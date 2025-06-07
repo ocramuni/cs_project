@@ -9,9 +9,9 @@ $mysqli = dbLink();
 $sql = "UPDATE users SET password='$password_hash'";
 
 if ($mysqli->query($sql) === TRUE) {
-    echo "Record updated successfully";
+    echo "Records updated successfully";
 } else {
-    echo "Error updating record: " . $mysqli->error;
+    echo "Error updating records: " . $mysqli->error;
 }
 
 $mysqli->close();
