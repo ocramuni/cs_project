@@ -1,0 +1,105 @@
+\documentclass[italian,12pt,a4paper,oneside,final]{report}
+\usepackage[toc]{appendix}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{csquotes}
+\usepackage[skins]{tcolorbox}
+\usepackage{hyperref}
+\graphicspath{ {images/} }
+\lstset{captionpos=b,showspaces=false,basicstyle=\ttfamily,showstringspaces=false,breaklines=true}
+\renewcommand{\thesection}{\arabic{section}} % remove the \chapter counter from being printed with every \section
+\renewcommand{\appendixtocname}{Appendice}
+\renewcommand{\appendixpagename}{Appendice}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=,
+	urlcolor=blue,
+	pdftitle={Marco Giunta - Progetto CS},
+	pdfauthor={Marco Giunta},
+}
+\newtcolorbox{mytcolorbox}[1]{
+	enhanced,
+	colback=white,
+	colframe=gray,
+	coltitle=black,
+	fonttitle=\bfseries,
+	detach title,
+	boxrule=2pt,
+	leftrule=0pt,
+	top=1mm,
+	attach title to upper={\par},
+	sharp corners,
+	borderline west={5pt}{0pt},
+	title=#1
+}
+
+\title{\Large Piattaforma per la distribuzione di\\biglietti gratuiti per eventi\\[0.5em]
+	\large Istruzioni di installazione}
+\date{Giugno 2025}
+\author{
+	Marco Giunta\thanks{Marco Giunta 147852 giunta.marco@spes.uniud.it}\\
+	Cybersecurity 2024/25, Università degli Studi di Udine}
+	
+\begin{document}
+% Generate title page
+\maketitle
+	
+% Generate TOCs
+\pagenumbering{arabic}
+\tableofcontents
+\section{Introduzione}
+In questo documento ci sono le istruzioni per l'installazione dell'applicazione web ``Piattaforma per la distribuzione di biglietti gratuiti per eventi''.
+
+\section{Prerequisiti}
+Prima di procedere all'avvio dell'applicazione sono necessari i seguenti software:
+
+\begin{itemize}
+	\item Docker  (\url{https://docs.docker.com/get-started/get-docker/})
+	\item Docker Compose (\url{https://docs.docker.com/compose/install/})
+\end{itemize}
+
+\section{Installazione}
+Copiare il file \emph{./docker/.env.dist} in \emph{./docker/.env} e modificare le variabili: \newline
+
+\begin{lstlisting}
+PROJECT_ROOT=/PATH/TO/PROJECT
+PHP_PEPPER=RANDOM_32BYTES_HEX_STRING
+PHP_SECRET=RANDOM_32BYTES_HEX_STRING
+\end{lstlisting}
+\hfill \break
+\noindent \textsc{/PATH/TO/PROJECT} deve essere il percorso \emph{assoluto} della directory del progetto. \newpage
+\noindent Per generare una stringa \textit{random} di 32 Bytes si può usare il comando:
+\begin{lstlisting}[language=bash] 
+openssl rand -hex 32
+\end{lstlisting}
+
+\begin{mytcolorbox}{Problema di permessi su MacOS}
+Per evitare problemi di permessi causati da UID e GID diversi tra l'host e i \textit{container}, utilizzare la versione \textbf{-dev-macos} dell'immagine PHP (rimuovere il commento dalla variabile \textbf{PHP\_TAG} nel file .env) dove l'utente predefinito ha UID/GID 501:20 che corrisponde all'utente predefinito di MacOS.
+\end{mytcolorbox}
+\hfill \break
+\noindent Avviare i \textit{container} con il comando:
+\begin{lstlisting}[language=bash]
+cd docker
+docker compose up -d
+\end{lstlisting}
+
+\section{Configurazione}
+Durante il primo avvio del container \emph{mariadb}, il database viene popolato con i dati presenti nella directory \textit{./mariadb-init}. \newline
+In particolare, vengono creati due account:
+
+\begin{itemize}
+	\item admin@example.com, con privilegi di amministratore
+	\item user@example.com, con privilegi utente
+\end{itemize}
+
+\noindent Per impostare una password a  \textbf{TUTTI} gli utenti presenti nel db, usare il comando:
+
+\begin{lstlisting}
+docker exec -ti tickets_cs_project_php php scripts/change_default_passwords.php PASSWORD
+\end{lstlisting}
+
+\noindent Dopo aver impostato la password, collegarsi al sito \url{https://localhost} .
+
+\end{document}
