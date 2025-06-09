@@ -64,7 +64,6 @@ include('includes/functions.php');
         echo '<table class="table">
             <thead>
 				<tr>
-
 					<th scope="col">Date</th>
 					<th scope="col">Title</th>
 					<th scope="col">Category</th>
@@ -76,7 +75,6 @@ include('includes/functions.php');
         foreach ($allEvents as $event) {
             $event_category = getEventCategoryById($event['category_id']);
             $date = date_create($event['event_date']);
-//            $date = date_format($event_date, 'l, F j, Y - H:i');
             echo '<tr>
 
 						<td class="text-nowrap">' . date_format($date, 'l, F j, Y - H:i') . ' </td>

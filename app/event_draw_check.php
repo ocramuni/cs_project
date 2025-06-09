@@ -70,7 +70,7 @@ include_once("includes/MyEvent.class.php");
                         <use xlink:href="assets/images/bootstrap-icons.svg#check-circle-fill"/>
                     </svg>
                     <div class="card-body">
-                        <p class="card-text text-center fs-4 text-nowrap">Tickets draw successful</p>
+                        <p class="card-text text-center fs-4 text-nowrap">Tickets drawn successful</p>
                     </div>
                 </div>
                 <?php
