@@ -81,7 +81,7 @@ if (!isLogged()) {
                 $download_link_class = 'pe-none';
             } else {
                 $user_details = isLogged();
-                $allTickets = getTicketsByUserID($user_details['id']);
+                $allTickets = getTicketsByUser($user_details);
                 $download_link_class = 'pe-auto';
             }
                 if (!empty($allTickets)) {

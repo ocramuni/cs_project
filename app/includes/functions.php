@@ -86,7 +86,14 @@ function getAllTickets(): array
 {
     $mysqli = dbLink();
     $tickets = array();
-    $query = $mysqli->prepare("SELECT participations.id, participations.event_id, users.first_name, users.last_name, users.email, events.title, events.event_date
+    $query = $mysqli->prepare("SELECT participations.id,
+       participations.event_id,
+       participations.user_id,
+       users.first_name,
+       users.last_name,
+       users.email,
+       events.title,
+       events.event_date
 FROM participations 
     INNER JOIN users ON participations.user_id = users.id
     INNER JOIN events ON participations.event_id = events.id 
@@ -95,19 +102,25 @@ ORDER BY event_date DESC");
     $query->execute();
     $result = $query->get_result();
     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $tickets[] = $row;
+        $winner = array('id' => $row['user_id'],
+            'first_name' => $row['first_name'],
+            'last_name' => $row['last_name'],
+            'email' => $row['email']);
+        if (isWinner($winner, $row['event_id'])) {
+            $tickets[] = $row;
+        }
     }
     return $tickets;
 }
 
 /**
- * Get all tickets of the user identified by id
+ * Get all tickets of the user
  *
- * @param int $user_id
+ * @param array $user_details
  * @return array
  * @throws Exception
  */
-function getTicketsByUserID(int $user_id): array
+function getTicketsByUser(array $user_details): array
 {
     $mysqli = dbLink();
     $tickets = array();
@@ -116,11 +129,13 @@ FROM participations
     INNER JOIN events ON participations.event_id = events.id 
 WHERE participations.winner = TRUE AND participations.user_id = ?
 ORDER BY event_date DESC");
-    $query->bind_param("i", $user_id);
+    $query->bind_param("i", $user_details['id']);
     $query->execute();
     $result = $query->get_result();
     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $tickets[] = $row;
+        if (isWinner($user_details, $row['event_id'])) {
+            $tickets[] = $row;
+        }
     }
     return $tickets;
 }
@@ -734,6 +749,7 @@ function wasDrawn(int $event_id): bool
     if ($result->num_rows == 1) {
         $row = $result->fetch_array(MYSQLI_ASSOC);
         if ($row['draw_date']) {
+            print_r($row['draw_date']);
             return isDateValid($row['draw_date']);
         }
     }
